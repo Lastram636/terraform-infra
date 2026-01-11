@@ -12,9 +12,21 @@ provider "google" {
   region  = var.region
 }
 
+# Enable APIs
+resource "google_project_service" "compute_api" {
+  service            = "compute.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "sqladmin_api" {
+  service            = "sqladmin.googleapis.com"
+  disable_on_destroy = false
+}
+
 # VPC Network
 resource "google_compute_network" "vpc_network" {
-  name = "terraform-network"
+  name       = "terraform-network"
+  depends_on = [google_project_service.compute_api]
 }
 
 resource "google_compute_subnetwork" "subnet" {

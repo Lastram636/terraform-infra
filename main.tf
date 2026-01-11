@@ -39,19 +39,19 @@ resource "google_compute_firewall" "default" {
 
 # Cloud SQL Instance
 resource "google_sql_database_instance" "master" {
-  name             = "ping-pong-mysql-instance-${random_id.db_name_suffix.hex}"
-  database_version = "MYSQL_8_0"
-  region           = var.region
+  name                = "ping-pong-mysql-instance-${random_id.db_name_suffix.hex}"
+  database_version    = "MYSQL_8_0"
+  region              = var.region
   deletion_protection = false # For demo purposes
 
   settings {
     tier = "db-f1-micro"
     ip_configuration {
-        ipv4_enabled    = true
-        authorized_networks {
-          name  = "all"
-          value = "0.0.0.0/0" # WARNING: Open to world for demo simplicity. Use Private IP in prod.
-        }
+      ipv4_enabled = true
+      authorized_networks {
+        name  = "all"
+        value = "0.0.0.0/0" # WARNING: Open to world for demo simplicity. Use Private IP in prod.
+      }
     }
   }
 }

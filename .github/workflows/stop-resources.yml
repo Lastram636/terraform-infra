@@ -1,0 +1,31 @@
+name: Stop Resources
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    steps:
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: Stop VM
+        run: |
+          echo "Stopping VM..."
+          gcloud compute instances stop ping-pong-vm --zone=us-central1-a
+
+      - name: Stop Cloud SQL
+        run: |
+          INSTANCE_NAME=$(gcloud sql instances list --format="value(name)" --filter="name:ping-pong-mysql-instance*")
+          if [ -n "$INSTANCE_NAME" ]; then
+            echo "Stopping SQL Instance: $INSTANCE_NAME"
+            gcloud sql instances patch $INSTANCE_NAME --activation-policy=NEVER
+          else
+            echo "No matching SQL instance found."
+          fi

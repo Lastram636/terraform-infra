@@ -37,6 +37,12 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
+      - name: Checkov GitHub Action
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./
+          soft_fail: true # Allow failure: report issues but don't stop build
+
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'

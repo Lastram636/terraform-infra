@@ -27,6 +27,9 @@ resource "google_project_service" "sqladmin_api" {
 resource "google_compute_network" "vpc_network" {
   name       = "terraform-network"
   depends_on = [google_project_service.compute_api]
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "google_compute_subnetwork" "subnet" {
@@ -108,4 +111,8 @@ resource "google_compute_instance" "vm_instance" {
   metadata_startup_script = "sudo apt-get update && sudo apt-get install -y python3-pip"
 
   tags = ["http-server"]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

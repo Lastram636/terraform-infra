@@ -31,6 +31,18 @@ jobs:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
 
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: Ensure State Bucket Exists
+        run: |
+          if ! gcloud storage buckets describe gs://${{ secrets.TF_STATE_BUCKET }} > /dev/null 2>&1; then
+            echo "Bucket does not exist. Creating..."
+            gcloud storage buckets create gs://${{ secrets.TF_STATE_BUCKET }} --project=${{ secrets.GCP_PROJECT_ID }} --location=us-central1
+          else
+            echo "Bucket exists."
+          fi
+
       - name: Terraform Init
         run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"
 
@@ -52,6 +64,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: Ensure State Bucket Exists
+        run: |
+           if ! gcloud storage buckets describe gs://${{ secrets.TF_STATE_BUCKET }} > /dev/null 2>&1; then
+             gcloud storage buckets create gs://${{ secrets.TF_STATE_BUCKET }} --project=${{ secrets.GCP_PROJECT_ID }} --location=us-central1
+           fi
 
       - name: Terraform Init
         run: terraform init -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}"

@@ -5,6 +5,10 @@ terraform {
       version = "~> 4.0"
     }
   }
+  backend "gcs" {
+    prefix = "terraform/state"
+    # bucket is configured via -backend-config in CI/CD
+  }
 }
 
 provider "google" {

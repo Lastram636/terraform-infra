@@ -66,11 +66,16 @@ resource "google_sql_database_instance" "master" {
   settings {
     tier = "db-f1-micro"
     ip_configuration {
-      ipv4_enabled = true
-      authorized_networks {
-        name  = "all"
-        value = "0.0.0.0/0" # WARNING: Open to world for demo simplicity. Use Private IP in prod.
-      }
+      # Disable public IPv4 to avoid exposing the instance to the internet.
+      ipv4_enabled = false
+      # For private access prefer Private IP (Private Services Access / VPC peering)
+      # and/or use the Cloud SQL Proxy for secure connections.
+      # To enable Private IP, configure a `google_compute_global_address` for
+      # private services access and a `google_service_networking_connection`,
+      # then set `private_network = google_compute_network.vpc_network.self_link`.
+      # Example (TODO):
+      # private_network = google_compute_network.vpc_network.self_link
+      require_ssl = true
     }
   }
 }
